@@ -288,3 +288,74 @@ func (m MySQLDialect) InsertAutoIncr(exec SqlExecutor, insertSql string, params 
 func (d MySQLDialect) QuoteField(f string) string {
 	return "`" + f + "`"
 }
+
+///////////////////////////////////////////////////////
+// SQL Anywhere //
+///////////
+
+// Implementation of Dialect for SQLAnywhere databases.
+type SQLAnywhereDialect struct {
+	suffix string
+}
+
+func (d SQLAnywhereDialect) ToSqlType(val reflect.Type, maxsize int, inAutoIncr bool) string {
+	switch val.Kind() {
+	case reflect.Bool:
+		return "bit"
+	case reflect.Int, reflect.Int16, reflect.Int32, reflect.Uint16, reflect.Uint32:
+		return "int"
+	case reflect.Int64, reflect.Uint64:
+		return "bigint"
+	case reflect.Float64, reflect.Float32:
+		return "double"
+	case reflect.Slice:
+		if val.Elem().Kind() == reflect.Uint8 {
+			return "long binary"
+		}
+	}
+
+	switch val.Name() {
+	case "NullableInt64":
+		return "bigint"
+	case "NullableFloat64":
+		return "double"
+	case "NullableBool":
+		return "tinyint"
+	case "NullableBytes":
+		return "long binary"
+	}
+
+	if maxsize < 1 {
+		maxsize = 255
+	}
+	return fmt.Sprintf("varchar(%d)", maxsize)
+}
+
+func (d SQLAnywhereDialect) AutoIncrStr() string {
+	return "DEFAULT AUTOINCREMENT"
+}
+
+func (d SQLAnywhereDialect) AutoIncrBindValue() string {
+	return "NULL"
+}
+
+func (d SQLAnywhereDialect) AutoIncrInsertSuffix(col *ColumnMap) string {
+	return ""
+}
+
+func (d SQLAnywhereDialect) CreateTableSuffix() string {
+	return d.suffix
+}
+
+func (d SQLAnywhereDialect) BindVar(i int) string {
+	return "?"
+}
+
+func (d SQLAnywhereDialect) InsertAutoIncr(exec SqlExecutor, insertSql string, params ...interface{}) (int64, error) {
+	return standardInsertAutoIncr(exec, insertSql, params...)
+}
+
+//Use bracketted identifiers to allow for databases with "set quoted_identifier off"
+func (d SQLAnywhereDialect) QuoteField(f string) string {
+	return "[" + f + "]"
+}
