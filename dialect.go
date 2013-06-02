@@ -332,11 +332,11 @@ func (d SQLAnywhereDialect) ToSqlType(val reflect.Type, maxsize int, inAutoIncr 
 }
 
 func (d SQLAnywhereDialect) AutoIncrStr() string {
-	return "DEFAULT AUTOINCREMENT"
+	return "default autoincrement"
 }
 
 func (d SQLAnywhereDialect) AutoIncrBindValue() string {
-	return "DEFAULT"
+	return "default"
 }
 
 func (d SQLAnywhereDialect) AutoIncrInsertSuffix(col *ColumnMap) string {
