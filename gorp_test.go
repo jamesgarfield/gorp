@@ -8,6 +8,7 @@ import (
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	_ "github.com/ziutek/mymysql/godrv"
+	_ "github.com/a-palchikov/sqlago"
 	"log"
 	"os"
 	"reflect"
@@ -941,6 +942,8 @@ func dialectAndDriver() (Dialect, string) {
 		return PostgresDialect{}, "postgres"
 	case "sqlite":
 		return SqliteDialect{}, "sqlite3"
+	case "sqlanywhere":
+		return SQLAnywhereDialect{}, "sqlany"
 	}
 	panic("GORP_TEST_DIALECT env variable is not set or is invalid. Please see README.md")
 }
