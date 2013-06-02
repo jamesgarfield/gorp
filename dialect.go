@@ -336,7 +336,7 @@ func (d SQLAnywhereDialect) AutoIncrStr() string {
 }
 
 func (d SQLAnywhereDialect) AutoIncrBindValue() string {
-	return "NULL"
+	return "DEFAULT"
 }
 
 func (d SQLAnywhereDialect) AutoIncrInsertSuffix(col *ColumnMap) string {
